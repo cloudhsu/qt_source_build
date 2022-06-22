@@ -15,26 +15,37 @@
 # Install shell script
 set -e
 
-https://www.cloudhsustation.synology.me:15001/file/fbdownload/qt-darwin19-x86_64-5.14.2.tar.xz
+if which curl > /dev/null; then
+    echo "To check curl ok."
+else
+    echo "Downloading curl."
+    if [[ $OSTYPE == darwin* ]];then
+        brew install curl
+    else
+        sudo apt install curl
+    fi
+fi
+if which 7z > /dev/null; then
+    echo "To check 7z ok."
+else
+    echo "Downloading 7zip."
+    if [[ $OSTYPE == darwin* ]];then
+        brew install p7zip
+    else
+        sudo apt install p7zip-full
+    fi
+fi
 
-#-----------------------------------------#
-#   QT Creator |  [major].[minor].[patch] #
-#-----------------------------------------#
-#    Version   |       7.      0.      2  #
-#    Version   |       6.      0.      2  #
-#    Version   |       5.      0.      3  #
-#-----------------------------------------#
-
-CREATOR_MAJOR=7
-CREATOR_MINOR=0
-CREATOR_PATCH=2
-
-CREATOR_VERSION=${CREATOR_MAJOR}.${CREATOR_MINOR}
-
-CREATOR_FULL_VERSION=${CREATOR_MAJOR}.${CREATOR_MINOR}.${CREATOR_PATCH}
-
-echo "Downloading QT-Creator ${CREATOR_FULL_VERSION} to install..."
-echo "If download fail you can open https://download.qt.io/official_releases/qtcreator/ to check."
+if which wget > /dev/null; then
+    echo "To check wget ok."
+else
+    echo "Downloading wget."
+    if [[ $OSTYPE == darwin* ]];then
+        brew install wget
+    else
+        sudo apt install wget
+    fi
+fi
 
 if [[ ! -d "$HOME/QT" ]]; then
     mkdir -p $HOME/QT
@@ -48,45 +59,29 @@ if [[ ! -d "$HOME/QT/SDK" ]]; then
     mkdir -p $HOME/QT/SDK
 fi
 
-cd $HOME/QT/QtCreator
+#-----------------------------------------#
+#   QT Creator |  [major].[minor].[patch] #
+#-----------------------------------------#
+#    Version   |       7.      0.      2  #
+#    Version   |       6.      0.      2  #
+#    Version   |       5.      0.      3  #
+#-----------------------------------------#
 
-mkdir -p ${CREATOR_FULL_VERSION}
+CREATOR_MAJOR=7
+CREATOR_MINOR=0
+CREATOR_PATCH=2
 
-# https://download.qt.io/official_releases/qtcreator/7.0/7.0.2/installer_source/mac_x64/qtcreator.7z
-# https://download.qt.io/official_releases/qtcreator/7.0/7.0.2/installer_source/windows_x64/qtcreator.7z
-# https://download.qt.io/official_releases/qtcreator/7.0/7.0.2/installer_source/linux_x64/qtcreator.7z
+bash ./install_qt-creator.sh ${CREATOR_MAJOR} ${CREATOR_MINOR} ${CREATOR_PATCH}
 
-# https://download.qt.io/official_releases/qtcreator/6.0/6.0.2/installer_source/windows_x64/qtcreator.7z
-# https://download.qt.io/official_releases/qtcreator/6.0/6.0.2/installer_source/mac_x64/qtcreator.7z
-# https://download.qt.io/official_releases/qtcreator/6.0/6.0.2/installer_source/linux_x64/qtcreator.7z
+#---------------------------------#
+#   QT   |[major].[minor].[patch] #
+#---------------------------------#
+# Version|      6.      2.      3 #
+# Version|      5.     14.      2 #
+#---------------------------------#
 
-OSPath="linux_x64"
+QT_MAJOR=5
+QT_MINOR=14
+QT_PATCH=2
 
-if [ $OSTYPE == "darwin*" ];then
-    OSPath="mac_x64"
-fi
-
-cd $HOME/QT/QtCreator/${CREATOR_FULL_VERSION}
-
-DOWNLOAD_PATH="https://download.qt.io/official_releases/qtcreator/${CREATOR_VERSION}/${CREATOR_FULL_VERSION}/installer_source/${OSPath}/qtcreator.7z"
-
-if [ !-x curl ]; then
-    if [ $OSTYPE == "darwin*" ];then
-        brew install curl
-    else
-        sudo apt install curl
-    fi
-fi
-if [ !-x 7z ]; then
-    if [ $OSTYPE == "darwin*" ];then
-        brew install p7zip
-    else
-        sudo apt install p7zip-full
-    fi
-fi
-
-curl -fL0 $DOWNLOAD_PATH
-7z e qtcreator*.7z
-
-# copy desktop file to /usr/share/applications for any user to be able to use it.
-# ~/.local/share/applications
+bash ./install_qt-sdk.sh ${QT_MAJOR} ${QT_MINOR} ${QT_PATCH}
